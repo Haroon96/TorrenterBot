@@ -1,0 +1,9 @@
+{
+    "TOKEN": "",
+    "RSS_FEEDS": [
+        "Movies",
+        "Downloads",
+        "TV Shows"
+    ],
+    "PORT": 9000
+}

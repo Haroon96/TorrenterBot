@@ -1,5 +1,5 @@
 # TorrenterBot
-All-in-one Telegram bot and RSS feed generator for automating torrent downloads.
+All-in-one Telegram bot and RSS feed generator for automating torrent downloads. The program allows searching for torrents and adding them to a built-in RSS feed which any decent BitTorrent client can then read and auto-download from. 
 
 ## Features
 - Search for torrents using Telegram on [snowfl.com](https://snowfl.com).

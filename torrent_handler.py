@@ -45,6 +45,11 @@ class TorrentHandler:
                 # extract query from message
                 query = message.text.replace('/torrent', '').strip()
 
+                if query == '':
+                    self.send_message('No query specified.')
+                    self.finished = True
+                    continue
+
                 # search for query
                 self.send_message('Searching...')
                 self.search(query)

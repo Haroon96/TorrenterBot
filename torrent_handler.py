@@ -132,7 +132,7 @@ class TorrentHandler:
             leech = item.find_element(By.CLASS_NAME, 'leech').text
             size = item.find_element(By.CLASS_NAME, 'size').text
             if name.strip() != '':
-                self.results.append(Torrent(name, magnet, 'S:%s, L:%s, %s' % (seed, leech, size)))
+                self.results.append(Torrent(name, magnet_link, 'S:%s, L:%s, %s' % (seed, leech, size)))
 
     def build_markup(self, options, index=False):
         markup = telebot.types.ReplyKeyboardMarkup()

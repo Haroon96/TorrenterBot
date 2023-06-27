@@ -2,7 +2,7 @@
 All-in-one Telegram bot and RSS feed generator for automating torrent downloads.
 
 ## Features
-- Search for torrents using Telegram on [snowfl.com](snowfl.com).
+- Search for torrents using Telegram on [snowfl.com](https://snowfl.com).
 - Integrated HTTP server for RSS feed generation. Use with your favorite BitTorrent client.
 - Notification on download completion.
 

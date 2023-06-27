@@ -131,7 +131,7 @@ class TorrentHandler:
         results = r.json()
 
         # return name and magnet
-        for item in results:
+        for item in results[:self.num_results]:
             if 'magnet' in item:
                 self.results.append(Torrent(item['name'], item['magnet'], 'S:%s, L:%s, %s' % (item['seeder'], item['leecher'], item['size'])))
 

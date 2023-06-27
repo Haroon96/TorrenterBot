@@ -8,6 +8,7 @@ from time import sleep
 import requests
 import json
 from uuid import uuid4
+import re
 
 Torrent = namedtuple('Torrent', ['name', 'magnet', 'stats'])
 
@@ -94,6 +95,13 @@ class TorrentHandler:
                 torrent: Torrent = self.results[index]
                 data = dict(name=torrent.name, magnet=torrent.magnet, guid=uuid4().hex)
                 requests.post(f'{self.rss_api}/{message.text}', data=json.dumps(data))
+
+                # save user info for later hook
+                torrent_id = re.search(r'urn:btih:(.*?)&', torrent.magnet).group(1)
+                with open('torrent_user_map.csv', 'a') as f:
+                    f.write('%s,%s\n' % (torrent_id, self.chat_id))
+
+                # inform user and finish thread
                 self.send_message("Added to RSS feed.")
                 self.state = 'finished'
                 self.finished = True

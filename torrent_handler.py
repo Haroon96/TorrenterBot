@@ -98,7 +98,7 @@ class TorrentHandler:
                 requests.post(f'{self.rss_api}/{message.text}', data=json.dumps(data))
 
                 # save user info for later hook
-                torrent_id = re.search(r'urn:btih:(.*?)&', torrent.magnet).group(1)
+                torrent_id = re.search(r'urn:btih:(.*?)&', torrent.magnet).group(1).lower()
                 with open('torrent_user_map.csv', 'a') as f:
                     f.write('%s,%s\n' % (torrent_id, self.chat_id))
 

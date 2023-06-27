@@ -118,7 +118,9 @@ class TorrentHandler:
         # get snowfl token
         src = re.search(r'src="(b.min.js.*?)"', response.text).group(1)
         script = requests.get(url + src, headers=headers).text
-        token = re.search(r'"(\w{38,38})"', script).group(1)
+        with open('script.js', 'w') as f:
+            f.write(script)
+        token = re.search(r'"(\w{30,45})"', script).group(1)
 
         # build query
         random_str = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8))

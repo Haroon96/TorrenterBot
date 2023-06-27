@@ -7,7 +7,7 @@ def main(torrent_id):
     # get chat id for this torrent id
     with open('torrent_user_map.csv') as f:
         mapping = f.read().split('\n')
-    torrent_id, chat_id, name  = [row for row in mapping if row.startswith(torrent_id.lower())][0].split(',')
+    torrent_id, chat_id, name  = [row for row in mapping if row.startswith(torrent_id.lower())][0].split(':')
 
     # read token from config
     with open(os.path.join(os.path.realpath(os.path.dirname(__file__)), 'config.json')) as f:

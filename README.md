@@ -21,5 +21,5 @@ All-in-one Telegram bot and RSS feed generator for automating torrent downloads.
    - Change `"NUM_RESULTS"` to the number of search results the bot should respond with.
 4. Run the program using `python main.py`.
 5. On the Telegram app, message your newly created bot using `/torrent <query>` to test things out.
-6. Once you add a torrent, check the RSS feed on `http://localhost:<PORT>/feed_name` to see if it shows up. Add this URL to your BitTorrent client RSS feeds. 
-7. You can configure different download directories for different feeds.
+6. Once you add a torrent, check the RSS feed on `http://localhost:<PORT>/feed_name` to see if it shows up. 
+7. Add this URL to your BitTorrent client RSS feeds to auto-download from. You can configure different download directories for different feeds among other parameters. (Read about how to do this in qBittorrent [here](https://thewiki.moe/tutorials/rss/)).

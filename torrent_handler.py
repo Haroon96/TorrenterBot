@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from time import sleep
 import requests
 import json
+from uuid import uuid4
 
 Torrent = namedtuple('Torrent', ['name', 'magnet', 'stats'])
 
@@ -91,7 +92,7 @@ class TorrentHandler:
                 
                 # send to rss feed
                 torrent: Torrent = self.results[index]
-                data = dict(name=torrent.name, magnet=torrent.magnet)
+                data = dict(name=torrent.name, magnet=torrent.magnet, guid=uuid4().hex)
                 requests.post(f'{self.rss_api}/{message.text}', data=json.dumps(data))
                 self.send_message("Added to RSS feed.")
                 self.state = 'finished'

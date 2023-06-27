@@ -59,7 +59,7 @@ class S(BaseHTTPRequestHandler):
 def make_xml(title, items):
     content = ''
     for item in items:
-        content += f'<item><title>{item["name"]}</title><link>{item["magnet"]}</link></item>'
+        content += f'<item><title>{item["name"]}</title><enclosure url=\"{item["magnet"]}\" type="application/x-bittorrent" /><guid>{item["guid"]}</guid></item>'
     return f'<?xml version="1.0" encoding="utf-8"?><rss version="2.0"><channel><title>{title}</title>{content}</channel></rss>'    
 
 def start_server(port=8080):

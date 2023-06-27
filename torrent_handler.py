@@ -130,7 +130,8 @@ class TorrentHandler:
 
         # return name and magnet
         for item in results:
-            self.results.append(Torrent(item['name'], item['magnet'], 'S:%s, L:%s, %s' % (item['seeder'], item['leecher'], item['size'])))
+            if 'magnet' in item:
+                self.results.append(Torrent(item['name'], item['magnet'], 'S:%s, L:%s, %s' % (item['seeder'], item['leecher'], item['size'])))
 
     def build_markup(self, options, index=False):
         markup = telebot.types.ReplyKeyboardMarkup()

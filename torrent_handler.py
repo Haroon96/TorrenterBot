@@ -13,11 +13,12 @@ import re
 Torrent = namedtuple('Torrent', ['name', 'magnet', 'stats'])
 
 class TorrentHandler:
-    def __init__(self, bot, chat_id, rss_api, rss_feeds):
+    def __init__(self, bot, chat_id, rss_api, rss_feeds, num_results):
         self.bot: telebot.TeleBot = bot
         self.chat_id = chat_id
         self.rss_api = rss_api
         self.rss_feeds = rss_feeds
+        self.num_results = num_results
         self.finished = False
         self.state = 'init'
         self.queue = Queue()
@@ -122,7 +123,7 @@ class TorrentHandler:
         sleep(5)
 
         # find results
-        results = driver.find_elements(By.CLASS_NAME, 'result-item')[:5]
+        results = driver.find_elements(By.CLASS_NAME, 'result-item')[:self.num_results]
 
         # return name and magnet
         for item in results:
@@ -140,6 +141,9 @@ class TorrentHandler:
             size = item.find_element(By.CLASS_NAME, 'size').text
             if name.strip() != '':
                 self.results.append(Torrent(name, magnet_link, 'S:%s, L:%s, %s' % (seed, leech, size)))
+
+        # close driver
+        driver.close()
 
     def build_markup(self, options, index=False):
         markup = telebot.types.ReplyKeyboardMarkup()

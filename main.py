@@ -13,7 +13,7 @@ def main():
     Thread(target=start_server, args=(config["PORT"],)).start()
 
     # start bot
-    bot = TelegramBot(config["TOKEN"], config["RSS_FEEDS"], f'http://localhost:{config["PORT"]}')
+    bot = TelegramBot(config["TOKEN"], config["RSS_FEEDS"], f'http://localhost:{config["PORT"]}', config["NUM_RESULTS"])
     bot.start()
 
 if __name__ == '__main__':

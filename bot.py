@@ -2,10 +2,11 @@ import telebot
 from torrent_handler import TorrentHandler
 
 class TelegramBot:
-    def __init__(self, token, rss_feeds, rss_api):    
+    def __init__(self, token, rss_feeds, rss_api, num_results):    
         self.bot = telebot.TeleBot(token)
         self.rss_feeds = rss_feeds
         self.rss_api = rss_api
+        self.num_results = num_results
         self.handlers = {}
 
     def bot_message_handler(self, messages: list[telebot.types.Message]):
@@ -18,7 +19,7 @@ class TelegramBot:
                 # check if already in a session with this user and wrap that up
                 if from_user in self.handlers and not self.handlers[from_user].finished:
                     self.handlers[from_user].finished = True
-                self.handlers[from_user] = TorrentHandler(self.bot, message.chat.id, self.rss_api, self.rss_feeds)
+                self.handlers[from_user] = TorrentHandler(self.bot, message.chat.id, self.rss_api, self.rss_feeds, self.num_results)
                 self.handlers[from_user].start()
             
             # put message in handler queue

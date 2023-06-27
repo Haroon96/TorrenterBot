@@ -5,5 +5,6 @@
         "Downloads",
         "TV Shows"
     ],
-    "PORT": 9000
+    "PORT": 9000,
+    "NUM_RESULTS": 5
 }

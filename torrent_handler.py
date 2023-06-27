@@ -32,7 +32,7 @@ class TorrentHandler:
 
     def send_message(self, text, reply_markup=telebot.types.ReplyKeyboardRemove()):
         if not self.finished:
-            self.bot.send_message(self.chat_id, text, reply_markup=reply_markup)
+            self.bot.send_message(self.chat_id, text, reply_markup=reply_markup, parse_mode='HTML')
 
     def handle(self):
         while not self.finished:
@@ -81,7 +81,7 @@ class TorrentHandler:
                     continue
 
                 # prompt for download
-                self.send_message('Downloading %s' % self.results[index].name)
+                self.send_message('Downloading <strong>%s</strong>' % self.results[index].name)
                 self.send_message('RSS feed?', self.build_markup(self.rss_feeds))                
                 self.state = 'pending_response_2'
 
@@ -102,7 +102,7 @@ class TorrentHandler:
                     f.write('%s,%s\n' % (torrent_id, self.chat_id))
 
                 # inform user and finish thread
-                self.send_message("Added to RSS feed.")
+                self.send_message("Added to RSS feed <strong>%s</strong>." % self.message.text)
                 self.state = 'finished'
                 self.finished = True
 

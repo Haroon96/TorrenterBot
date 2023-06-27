@@ -82,7 +82,7 @@ class TorrentHandler:
                     continue
 
                 # prompt for download
-                self.send_message('Downloading <strong>%s</strong>' % self.results[index].name)
+                self.send_message('Downloading: <strong>%s</strong>' % self.results[index].name)
                 self.send_message('RSS feed?', self.build_markup(self.rss_feeds))                
                 self.state = 'pending_response_2'
 

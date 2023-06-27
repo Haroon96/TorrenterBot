@@ -2,13 +2,14 @@ import telebot
 from queue import Queue, Empty
 from threading import Thread
 from collections import namedtuple
-from selenium.webdriver import Chrome, ChromeOptions
-from selenium.webdriver.common.by import By
-from time import sleep
 import requests
 import json
 from uuid import uuid4
 import re
+import requests
+from time import time
+import random
+import string
 
 Torrent = namedtuple('Torrent', ['name', 'magnet', 'stats'])
 
@@ -109,41 +110,27 @@ class TorrentHandler:
 
 
     def search(self, query):
-        options = ChromeOptions()
-        options.add_argument("--no-sandbox")
-        options.add_argument("--headless")
-        options.add_argument("--disable-gpu")
-        driver = Chrome(options=options)
+        # get snowfl homepage
+        url = 'https://snowfl.com/'
+        headers = {'user-agent': 'haroon/torrenterbot'}
+        response = requests.get(url, headers=headers)
 
-        # get website
-        driver.get('https://snowfl.com')
-        driver.find_element(By.ID, 'query').send_keys(query)
-        sleep(1)
-        driver.find_element(By.ID, 'btn-search').click()
-        sleep(5)
+        # get snowfl token
+        src = re.search(r'src="(b.min.js.*?)"', response.text).group(1)
+        script = requests.get(url + src, headers=headers).text
+        token = re.search(r'"(\w{38,38})"', script).group(1)
 
-        # find results
-        results = driver.find_elements(By.CLASS_NAME, 'result-item')[:self.num_results]
+        # build query
+        random_str = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8))
+        query = '{0}/{1}/{2}/{3}/0/SEED/NONE/1?_={4}'.format(url, token, 'ubuntu 22.04', random_str, str(int(time() * 1000)))
+
+        # get search results
+        r = requests.get(query, headers=headers)
+        results = r.json()
 
         # return name and magnet
         for item in results:
-            name = item.find_element(By.CLASS_NAME, 'name').text
-            magnet = item.find_element(By.CLASS_NAME, 'torrent')
-            magnet_link = magnet.get_attribute('href')
-
-            # check if link loaded
-            while '#fetch' in magnet_link:
-                magnet.click()
-                magnet_link = magnet.get_attribute('href')
-
-            seed = item.find_element(By.CLASS_NAME, 'seed').text
-            leech = item.find_element(By.CLASS_NAME, 'leech').text
-            size = item.find_element(By.CLASS_NAME, 'size').text
-            if name.strip() != '':
-                self.results.append(Torrent(name, magnet_link, 'S:%s, L:%s, %s' % (seed, leech, size)))
-
-        # close driver
-        driver.close()
+            self.results.append(Torrent(item['name'], item['magnet'], 'S:%s, L:%s, %s' % (item['seeder'], item['leecher'], item['size'])))
 
     def build_markup(self, options, index=False):
         markup = telebot.types.ReplyKeyboardMarkup()

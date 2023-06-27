@@ -124,7 +124,7 @@ class TorrentHandler:
 
         # build query
         random_str = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8))
-        query = '{0}/{1}/{2}/{3}/0/SEED/NONE/1?_={4}'.format(url, token, 'ubuntu 22.04', random_str, str(int(time() * 1000)))
+        query = '{0}/{1}/{2}/{3}/0/SEED/NONE/1?_={4}'.format(url, token, query, random_str, str(int(time() * 1000)))
 
         # get search results
         r = requests.get(query, headers=headers)

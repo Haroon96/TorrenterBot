@@ -17,7 +17,8 @@ class S(BaseHTTPRequestHandler):
         
         # load rss and send
         with open(rss_file) as f:
-            rss = [json.loads(i) for i in f.read().splitlines()].reverse()
+            rss = [json.loads(i) for i in f.read().splitlines()]
+            rss.reverse()
 
         # create xml and send response
         xml = make_xml(title, rss)

@@ -119,7 +119,15 @@ class TorrentHandler:
         # return name and magnet
         for item in results:
             name = item.find_element(By.CLASS_NAME, 'name').text
-            magnet = item.find_element(By.CLASS_NAME, 'torrent').get_attribute('href')
+            magnet = item.find_element(By.CLASS_NAME, 'torrent')
+            magnet_link = magnet.get_attribute('href')
+
+            # check if link loaded
+            while '#fetch' in magnet_link:
+                magnet.click()
+                sleep(2)
+                magnet_link = magnet.get_attribute('href')
+
             seed = item.find_element(By.CLASS_NAME, 'seed').text
             leech = item.find_element(By.CLASS_NAME, 'leech').text
             size = item.find_element(By.CLASS_NAME, 'size').text

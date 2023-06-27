@@ -65,7 +65,7 @@ class TorrentHandler:
                     continue
 
                 # show results and ask for input
-                message = '\n'.join(['<strong>%s.</strong> %s\n%s\n' % (i, r.name, r.stats) for i, r in enumerate(self.results)])
+                message = '\n'.join(['<strong>%s:</strong> %s\n%s\n' % (i + 1, r.name, r.stats) for i, r in enumerate(self.results)])
                 self.send_message(message, self.build_markup(self.results, index=True))
                 self.state = 'pending_response_1'
             

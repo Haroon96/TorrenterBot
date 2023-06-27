@@ -111,7 +111,7 @@ class TorrentHandler:
         driver.find_element(By.ID, 'query').send_keys(query)
         sleep(1)
         driver.find_element(By.ID, 'btn-search').click()
-        sleep(10)
+        sleep(5)
 
         # find results
         results = driver.find_elements(By.CLASS_NAME, 'result-item')[:5]
@@ -125,7 +125,6 @@ class TorrentHandler:
             # check if link loaded
             while '#fetch' in magnet_link:
                 magnet.click()
-                sleep(2)
                 magnet_link = magnet.get_attribute('href')
 
             seed = item.find_element(By.CLASS_NAME, 'seed').text

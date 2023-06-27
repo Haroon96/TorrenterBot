@@ -103,7 +103,7 @@ class TorrentHandler:
                     f.write('%s,%s\n' % (torrent_id, self.chat_id))
 
                 # inform user and finish thread
-                self.send_message("Added to RSS feed <strong>%s</strong>." % message.text)
+                self.send_message("Added to RSS feed: <strong>%s</strong>" % message.text)
                 self.state = 'finished'
                 self.finished = True
 

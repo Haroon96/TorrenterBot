@@ -47,6 +47,9 @@ class S(BaseHTTPRequestHandler):
             self.end_headers()
             return
         
+        # fix escaping
+        js['magnet'] = js['magnet'].replace('&', '&amp;')
+
         # append to jsonl
         with open(rss_file, 'a') as f:
             json.dump(js, f)

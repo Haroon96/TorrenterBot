@@ -22,6 +22,7 @@ All-in-one Telegram bot and RSS feed generator for automating torrent downloads.
 3. Change the `"PORT"` to whichever port number to run the RSS feed server on.
 4. Add the names of required RSS feeds under `"RSS_FEEDS"`.
 5. Change `"NUM_RESULTS"` to the number of search results the bot should respond with.
+5. Change `"DEFAULT_CHAT_ID"` to the default chat ID that should receive notification if download was manually started.
 
 ### RSS Feed
 1. Start the bot and RSS feed server using `python main.py`.
@@ -33,4 +34,4 @@ All-in-one Telegram bot and RSS feed generator for automating torrent downloads.
 
 ### Completion Notification
 1. Find the option in your BitTorrent client for running external programs on torrent completion.
-2. Set the option to run the following command: `python3 <path-to-folder>/hook.py "<torrent-id>"`. For example, in qBittorrent, the command is `python3 hook.py "%K"`.
+2. Set the option to run the following command: `python3 <path-to-folder>/hook.py "<torrent-id>" "<torrent-name>"`. For example, in qBittorrent, the command is `python3 hook.py "%K" "%N"`.

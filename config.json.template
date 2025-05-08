@@ -5,6 +5,12 @@
         "Downloads",
         "TV Shows"
     ],
-    "PORT": 9000,
-    "NUM_RESULTS": 5
+    "RSS_PORT": 20232, "NUM_RESULTS": 5, "DEFAULT_CHAT_ID": 000,
+    "QBITTORRENT_NOX": {
+        "USERNAME": "",
+        "PASSWORD": "",
+        "API_URL": ""
+    },
+    "ALLOWED_CHAT_IDS": [
+    ]
 }

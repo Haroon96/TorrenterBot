@@ -13,7 +13,7 @@ import string
 
 Torrent = namedtuple('Torrent', ['name', 'magnet', 'stats'])
 
-class TorrentHandler:
+class MessageHandler:
     def __init__(self, bot, chat_id, rss_api, rss_feeds, num_results):
         self.bot: telebot.TeleBot = bot
         self.chat_id = chat_id

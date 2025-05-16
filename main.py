@@ -1,4 +1,5 @@
-import telebot
+from telebot import TeleBot, apihelper
+import telebot.types
 from message_handler import MessageHandler
 import json
 from threading import Thread
@@ -7,7 +8,7 @@ import requests
 
 class TelegramBot:
     def __init__(self, token, rss_feeds, rss_api, num_results, allowed_chat_ids, qbittorrent_credentials):    
-        self.bot = telebot.TeleBot(token)
+        self.bot = TeleBot(token)
         self.rss_feeds = rss_feeds
         self.rss_api = rss_api
         self.num_results = num_results

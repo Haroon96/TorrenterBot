@@ -6,7 +6,7 @@ from threading import Thread
 import rss_server
 import requests
 
-apihelper.API_URL = "https://telegram-api-proxy-anonymous.pages.dev/api/bot{0}/{1}"
+# apihelper.API_URL = "https://telegram-api-proxy-anonymous.pages.dev/api/bot{0}/{1}"
 
 class TelegramBot:
     def __init__(self, token, rss_feeds, rss_api, num_results, allowed_chat_ids, qbittorrent_credentials):    

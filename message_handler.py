@@ -10,24 +10,30 @@ import requests
 from time import time
 import random
 import string
+from enum import Enum
 
 Torrent = namedtuple('Torrent', ['name', 'magnet', 'stats'])
 
 class MessageHandler:
+
+    class HandlerState(Enum):
+        INITIAL = 1
+        TORRENT_SELECTION = 2
+        RSS_FEED_SELECTION = 3
+
     def __init__(self, bot, chat_id, rss_api, rss_feeds, num_results):
-        self.bot: telebot.TeleBot = bot
+        self.bot = bot
         self.chat_id = chat_id
         self.rss_api = rss_api
         self.rss_feeds = rss_feeds
         self.num_results = num_results
         self.finished = False
-        self.state = 'init'
+        self.state = HandlerState.INITIAL
         self.queue = Queue()
-        self.thread = Thread(target=self.handle)
         self.results = []
 
     def start(self):
-        self.thread.start()
+        Thread(target=self.handle).start()
 
     def put(self, message):
         self.queue.put(message)

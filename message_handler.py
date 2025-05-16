@@ -1,4 +1,4 @@
-import telebot
+import telebot.types
 from queue import Queue, Empty
 from threading import Thread
 from collections import namedtuple

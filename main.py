@@ -1,5 +1,4 @@
-from telebot import TeleBot, apihelper
-import telebot.types
+import telebot
 from message_handler import MessageHandler
 import json
 from threading import Thread
@@ -8,7 +7,7 @@ import requests
 
 class TelegramBot:
     def __init__(self, token, rss_feeds, rss_api, num_results, allowed_chat_ids, qbittorrent_credentials):    
-        self.bot = TeleBot(token)
+        self.bot = telebot.TeleBot(token)
         self.rss_feeds = rss_feeds
         self.rss_api = rss_api
         self.num_results = num_results
@@ -39,7 +38,8 @@ class TelegramBot:
                     req = session.get(f'{api_url}/sync/maindata?rid=0')
                     response = req.json()
                     reply = []
-                    for torrent in response['torrents'].values():
+                    print(response)
+                    for torrent in response.get('torrents', []).values():
                         reply.append(f'<strong>{torrent["name"]}</strong>\nProgress: {torrent["progress"] * 100:.1f}%')
                     self.bot.send_message(chat_id, '\n\n'.join(reply), parse_mode='HTML')
                     continue
@@ -48,13 +48,13 @@ class TelegramBot:
             # check if starting a new session
             if message.text.startswith('/torrent'):
                 # check if already in a session with this user and wrap that up
-                if from_user in self.handlers and not self.handlers[from_user].finished:
+                if from_user in self.handlers and not self.handlers[from_user].is_finished():
                     self.handlers[from_user].finished = True
                 self.handlers[from_user] = MessageHandler(self.bot, chat_id, self.rss_api, self.rss_feeds, self.num_results)
                 self.handlers[from_user].start()
 
             # put message in handler queue
-            if from_user in self.handlers and not self.handlers[from_user].finished:
+            if from_user in self.handlers and not self.handlers[from_user].is_finished():
                 self.handlers[from_user].put(message)
 
     def start(self):

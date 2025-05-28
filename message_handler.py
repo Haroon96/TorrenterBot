@@ -40,12 +40,15 @@ class MessageHandler:
         self.queue.put(message)
 
     def send_message(self, text, reply_markup=telebot.types.ReplyKeyboardRemove()):
-        if self.state == MessageHandler.State.FINISHED:
+        if self.is_finished():
             return
         self.bot.send_message(self.chat_id, text, reply_markup=reply_markup, parse_mode='HTML')
+    
+    def is_finished(self):
+        return self.state == MessageHandler.State.FINISHED
 
     def handle(self):
-        while self.state != MessageHandler.State.FINISHED:
+        while not self.is_finished():
             # get message from queue
             try: 
                 message: telebot.types.Message = self.queue.get(timeout=120)

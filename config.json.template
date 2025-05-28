@@ -12,5 +12,6 @@
         "API_URL": ""
     },
     "ALLOWED_CHAT_IDS": [
-    ]
+    ],
+    "TELEGRAM_API_URL": ""
 }

@@ -73,5 +73,7 @@ if __name__ == '__main__':
 
     # start bot
     rss_api_url = f'http://localhost:{config["RSS_PORT"]}'
+    if config.get("TELEGRAM_API_URL", None):
+        telebot.apihelper.API_URL = config.get("TELEGRAM_API_URL")
     bot = TelegramBot(config["TOKEN"], config["RSS_FEEDS"], rss_api_url, config["NUM_RESULTS"], config["ALLOWED_CHAT_IDS"], config["QBITTORRENT_NOX"])
     bot.start()

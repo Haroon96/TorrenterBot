@@ -58,8 +58,13 @@ class TelegramBot:
                 self.handlers[from_user].put(message)
 
     def start(self):
-        self.bot.set_update_listener(self.bot_message_handler)
-        self.bot.infinity_polling()
+        while True:
+            try:
+                updates = self.bot.get_updates()
+                for update in updates:
+                    self.bot_message_handler(update.message)
+            except:
+                continue
 
 if __name__ == '__main__':
 

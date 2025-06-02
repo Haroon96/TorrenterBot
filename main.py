@@ -38,9 +38,10 @@ class TelegramBot:
                     req = session.get(f'{api_url}/sync/maindata?rid=0')
                     response = req.json()
                     reply = []
-                    print(response)
-                    for torrent in response.get('torrents', []).values():
+                    for torrent in response.get('torrents', {}).values():
                         reply.append(f'<strong>{torrent["name"]}</strong>\nProgress: {torrent["progress"] * 100:.1f}%')
+                    if not reply:
+                        reply = ['No torrents in progress']
                     self.bot.send_message(chat_id, '\n\n'.join(reply), parse_mode='HTML')
                     continue
 

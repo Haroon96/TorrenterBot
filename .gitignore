@@ -3,3 +3,4 @@ config.json
 .DS_Store
 torrent_user_map.csv
 script.js
+.env

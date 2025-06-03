@@ -2,8 +2,9 @@ import telebot
 from message_handler import MessageHandler
 import json
 from threading import Thread
-import rss_server
 import requests
+from time import sleep
+import rss_server
 
 class TelegramBot:
     def __init__(self, token, rss_feeds, rss_api, num_results, allowed_chat_ids, qbittorrent_credentials):    
@@ -38,10 +39,11 @@ class TelegramBot:
                     req = session.get(f'{api_url}/sync/maindata?rid=0')
                     response = req.json()
                     reply = []
-                    print(response)
-                    for torrent in response.get('torrents', []).values():
+                    for torrent in response.get('torrents', {}).values():
                         reply.append(f'<strong>{torrent["name"]}</strong>\nProgress: {torrent["progress"] * 100:.1f}%')
-                    self.bot.send_message(chat_id, '\n\n'.join(reply), parse_mode='HTML')
+                    if not reply:
+                        reply = ['No torrents in progress']
+                    self.bot.send_message(chat_id, '\n\n'.join(reply), parse_mode='HTML', reply_to_message_id=message.id)
                     continue
 
 
@@ -58,8 +60,19 @@ class TelegramBot:
                 self.handlers[from_user].put(message)
 
     def start(self):
-        self.bot.set_update_listener(self.bot_message_handler)
-        self.bot.infinity_polling()
+        update_id = None
+        while True:
+            try:
+                updates = self.bot.get_updates(offset=update_id)
+                if not updates:
+                    continue
+                update_id = updates[-1].update_id + 1
+                self.bot_message_handler([upd.message for upd in updates])
+            except KeyboardInterrupt:
+                break
+            except Exception:
+                sleep(60)
+                continue
 
 if __name__ == '__main__':
 

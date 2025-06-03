@@ -39,10 +39,10 @@ class MessageHandler:
     def put(self, message):
         self.queue.put(message)
 
-    def send_message(self, text, reply_markup=telebot.types.ReplyKeyboardRemove()):
+    def send_message(self, text, reply_to_message_id=None, reply_markup=telebot.types.ReplyKeyboardRemove()):
         if self.is_finished():
             return
-        self.bot.send_message(self.chat_id, text, reply_markup=reply_markup, parse_mode='HTML')
+        self.bot.send_message(self.chat_id, text, reply_markup=reply_markup, parse_mode='HTML', reply_to_message_id=reply_to_message_id)
     
     def is_finished(self):
         return self.state == MessageHandler.State.FINISHED
@@ -66,18 +66,18 @@ class MessageHandler:
                     continue
 
                 # search for query
-                self.send_message('Searching...')
+                self.send_message('Searching...', reply_to_message_id=message.id)
                 self.results = self.search(query)
                 
                 # check if results not found
                 if len(self.results) == 0:
-                    self.send_message('No results found! Please try a different query.')
+                    self.send_message('No results found! Please try a different query.', reply_to_message_id=message.id)
                     self.state = MessageHandler.State.FINISHED
                     continue
 
                 # show results and ask for input
-                message = '\n'.join(['<strong>%s:</strong> %s\n%s\n' % (i + 1, r.name, r.stats) for i, r in enumerate(self.results)])
-                self.send_message(message, self.build_markup(self.results, index=True))
+                message_txt = '\n'.join(['<strong>%s:</strong> %s\n%s\n' % (i + 1, r.name, r.stats) for i, r in enumerate(self.results)])
+                self.send_message(message_txt, reply_markup=self.build_markup(self.results, index=True), reply_to_message_id=message.id)
                 self.state = MessageHandler.State.TORRENT_SELECTION
             
             elif self.state == MessageHandler.State.TORRENT_SELECTION:
@@ -85,23 +85,23 @@ class MessageHandler:
                 try: 
                     index = int(message.text) - 1
                 except:
-                    self.send_message('Invalid!')
+                    self.send_message('Invalid!', reply_to_message_id=message.id)
                     continue
 
                 # check if within bounds
                 if index < 0 or index > len(self.results):
-                    self.send_message('Invalid!')
+                    self.send_message('Invalid!', reply_to_message_id=message.id)
                     continue
 
                 # prompt for download
-                self.send_message('Downloading: <strong>%s</strong>' % self.results[index].name)
-                self.send_message('RSS feed?', self.build_markup(self.rss_feeds))                
+                self.send_message('Downloading: <strong>%s</strong>' % self.results[index].name, reply_to_message_id=message.id)
+                self.send_message('RSS feed?', reply_markup=self.build_markup(self.rss_feeds))                
                 self.state = MessageHandler.State.RSS_FEED_SELECTION
 
             elif self.state == MessageHandler.State.RSS_FEED_SELECTION:
                 # check if valid index
                 if message.text not in self.rss_feeds:
-                    self.send_message('Invalid!')
+                    self.send_message('Invalid!', reply_to_message_id=message.id)
                     continue
                 
                 # send to rss feed
@@ -115,7 +115,7 @@ class MessageHandler:
                     f.write('%s:%s:%s\n' % (torrent_id, self.chat_id, torrent.name))
 
                 # inform user and finish thread
-                self.send_message("Added to RSS feed: <strong>%s</strong>" % message.text)
+                self.send_message("Added to RSS feed: <strong>%s</strong>" % message.text, reply_to_message_id=message.id)
                 self.state = MessageHandler.State.FINISHED
 
 

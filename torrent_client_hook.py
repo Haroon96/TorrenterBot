@@ -27,4 +27,5 @@ def main(torrent_id, torrent_name):
     bot.send_message(chat_id, '<strong>%s</strong> has finished downloading.' % name, parse_mode='HTML')
     
 if __name__ == '__main__':
+    telebot.apihelper.RETRY_ON_ERROR = True
     main(sys.argv[1], sys.argv[2])

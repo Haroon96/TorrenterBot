@@ -70,11 +70,14 @@ class TelegramBot:
                 self.bot_message_handler([upd.message for upd in updates])
             except KeyboardInterrupt:
                 break
-            except Exception:
-                sleep(60)
+            except Exception as e:
+                sleep(5)
                 continue
 
 if __name__ == '__main__':
+
+    # telebot configuration
+    telebot.apihelper.RETRY_ON_ERROR = True
 
     # load configuration
     with open('config.json') as f:

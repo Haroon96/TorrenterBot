@@ -117,8 +117,8 @@ class MessageHandler:
 
                 # save user info for later hook
                 torrent_id = re.search(r'urn:btih:(.*?)&', torrent.magnet).group(1).lower()
-                with open('torrent_user_map.csv', 'a') as f:
-                    f.write(f'{torrent_id}:{self.chat_id}:{torrent.name}\n')
+                with open('torrent_mappings.tsv', 'a') as f:
+                    f.write(f'{torrent_id}\t{self.chat_id}\t{torrent.name}\n')
 
                 # inform user and finish thread
                 self.send_message(f'Added to RSS feed: <strong>"{message.text}"</strong>', reply_to_message_id=message.id)

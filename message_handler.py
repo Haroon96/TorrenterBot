@@ -80,7 +80,7 @@ class MessageHandler:
                 # show results and ask for input
                 reply_markup = self.build_markup(self.results, index=True)
                 torrent_results = [f'{i}\n{r.name}\n{r.stats}' for i, r in enumerate(self.results, start=1)]
-                torrent_results_message = '\n'.join(torrent_results)
+                torrent_results_message = '\n\n'.join(torrent_results)
                 self.send_message(torrent_results_message, reply_markup=reply_markup, reply_to_message_id=message.id)
                 self.state = MessageHandler.State.TORRENT_SELECTION
             

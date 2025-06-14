@@ -18,13 +18,14 @@ def main(torrent_id, torrent_name):
     # create bot
     bot = telebot.TeleBot(config["TOKEN"])
 
-    # find users waiting on this torrent
-    notify_users = [row for row in mapping if row.startswith(torrent_id.lower())]
-    notify_users.append((torrent_id, config['DEFAULT_CHAT_ID'], torrent_name))
+    # find users waiting on this torrent including default chat id
+    notify_users = set()
+    notify_users.add(config['DEFAULT_CHAT_ID'])
+    notify_users |= set([int(row.split('\t')[1]) for row in mapping if row.startswith(torrent_id)])
 
     # send messages to users
-    for torrent_id, chat_id, name in notify_users:
-        bot.send_message(chat_id, f'<strong>"{name}"</strong> has finished downloading.', parse_mode='HTML')
+    for chat_id in notify_users:
+        bot.send_message(chat_id, f'<strong>"{torrent_name}"</strong> has finished downloading.', parse_mode='HTML')
     
 if __name__ == '__main__':
     telebot.apihelper.RETRY_ON_ERROR = True

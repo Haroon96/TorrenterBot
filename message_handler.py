@@ -53,8 +53,10 @@ class MessageHandler:
             try: 
                 message: telebot.types.Message = self.queue.get(timeout=120)
             except Empty:
-                self.send_message('Your session timed out.')
-                self.state = MessageHandler.State.FINISHED
+                if self.state != MessageHandler.State.FINISHED:
+                    self.send_message('Your session timed out.')
+                    self.state = MessageHandler.State.FINISHED
+                continue
                 
             if self.state == MessageHandler.State.INITIAL:
                 # extract query from message
@@ -66,7 +68,7 @@ class MessageHandler:
                     continue
 
                 # search for query
-                self.send_message(f'Searching for {query}', reply_to_message_id=message.id)
+                self.send_message(f'Searching for <strong>"{query}"</strong>', reply_to_message_id=message.id)
                 self.results = self.search(query)
                 
                 # check if results not found
@@ -98,7 +100,7 @@ class MessageHandler:
                 # prompt for download
                 name = self.results[index].name
                 reply_markup = self.build_markup(self.rss_feeds)
-                self.send_message(f'Downloading: <strong>{name}</strong>', reply_to_message_id=message.id)
+                self.send_message(f'Downloading: <strong>"{name}"</strong>', reply_to_message_id=message.id)
                 self.send_message('RSS feed?', reply_markup=reply_markup)                
                 self.state = MessageHandler.State.RSS_FEED_SELECTION
 
@@ -119,7 +121,7 @@ class MessageHandler:
                     f.write(f'{torrent_id}:{self.chat_id}:{torrent.name}\n')
 
                 # inform user and finish thread
-                self.send_message(f"Added to RSS feed: <strong>{message.text}</strong>", reply_to_message_id=message.id)
+                self.send_message(f'Added to RSS feed: <strong>"{message.text}"</strong>', reply_to_message_id=message.id)
                 self.state = MessageHandler.State.FINISHED
 
     def search(self, query):

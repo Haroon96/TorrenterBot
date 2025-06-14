@@ -53,8 +53,10 @@ class MessageHandler:
             try: 
                 message: telebot.types.Message = self.queue.get(timeout=120)
             except Empty:
-                self.send_message('Your session timed out.')
-                self.state = MessageHandler.State.FINISHED
+                if self.state != MessageHandler.State.FINISHED:
+                    self.send_message('Your session timed out.')
+                    self.state = MessageHandler.State.FINISHED
+                continue
                 
             if self.state == MessageHandler.State.INITIAL:
                 # extract query from message
@@ -66,7 +68,7 @@ class MessageHandler:
                     continue
 
                 # search for query
-                self.send_message('Searching...', reply_to_message_id=message.id)
+                self.send_message(f'Searching for <strong>"{query}"</strong>', reply_to_message_id=message.id)
                 self.results = self.search(query)
                 
                 # check if results not found
@@ -76,8 +78,10 @@ class MessageHandler:
                     continue
 
                 # show results and ask for input
-                message_txt = '\n'.join(['<strong>%s:</strong> %s\n%s\n' % (i + 1, r.name, r.stats) for i, r in enumerate(self.results)])
-                self.send_message(message_txt, reply_markup=self.build_markup(self.results, index=True), reply_to_message_id=message.id)
+                reply_markup = self.build_markup(self.results, index=True)
+                torrent_results = [f'{i}\n{r.name}\n{r.stats}' for i, r in enumerate(self.results, start=1)]
+                torrent_results_message = '\n\n'.join(torrent_results)
+                self.send_message(torrent_results_message, reply_markup=reply_markup, reply_to_message_id=message.id)
                 self.state = MessageHandler.State.TORRENT_SELECTION
             
             elif self.state == MessageHandler.State.TORRENT_SELECTION:
@@ -94,8 +98,10 @@ class MessageHandler:
                     continue
 
                 # prompt for download
-                self.send_message('Downloading: <strong>%s</strong>' % self.results[index].name, reply_to_message_id=message.id)
-                self.send_message('RSS feed?', reply_markup=self.build_markup(self.rss_feeds))                
+                name = self.results[index].name
+                reply_markup = self.build_markup(self.rss_feeds)
+                self.send_message(f'Downloading: <strong>"{name}"</strong>', reply_to_message_id=message.id)
+                self.send_message('RSS feed?', reply_markup=reply_markup)                
                 self.state = MessageHandler.State.RSS_FEED_SELECTION
 
             elif self.state == MessageHandler.State.RSS_FEED_SELECTION:
@@ -112,12 +118,11 @@ class MessageHandler:
                 # save user info for later hook
                 torrent_id = re.search(r'urn:btih:(.*?)&', torrent.magnet).group(1).lower()
                 with open('torrent_user_map.csv', 'a') as f:
-                    f.write('%s:%s:%s\n' % (torrent_id, self.chat_id, torrent.name))
+                    f.write(f'{torrent_id}:{self.chat_id}:{torrent.name}\n')
 
                 # inform user and finish thread
-                self.send_message("Added to RSS feed: <strong>%s</strong>" % message.text, reply_to_message_id=message.id)
+                self.send_message(f'Added to RSS feed: <strong>"{message.text}"</strong>', reply_to_message_id=message.id)
                 self.state = MessageHandler.State.FINISHED
-
 
     def search(self, query):
         # get snowfl homepage
@@ -143,7 +148,8 @@ class MessageHandler:
         for item in response[:self.num_results]:
             if 'magnet' not in item:
                 continue
-            torrent = Torrent(item['name'], item['magnet'], 'S: %s, L: %s, %s' % (item['seeder'], item['leecher'], item['size']))
+            seeds, leeches, size = item['seeder'], item['leecher'], item['size']
+            torrent = Torrent(item['name'], item['magnet'], f'S: {seeds}, L: {leeches}, {size}')
             results.append(torrent)
         return results
 

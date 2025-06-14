@@ -34,4 +34,4 @@ All-in-one Telegram bot and RSS feed generator for automating torrent downloads.
 
 ### Completion Notification
 1. Find the option in your BitTorrent client for running external programs on torrent completion.
-2. Set the option to run the following command: `python3 <path-to-folder>/hook.py "<torrent-id>" "<torrent-name>"`. For example, in qBittorrent, the command is `python3 hook.py "%K" "%N"`.
+2. Set the option to run the following command: `python3 <path-to-folder>/torrent_client_hook.py "<torrent-id>" "<torrent-name>"`. For example, in qBittorrent, the command is `python3 torrent_client_hook.py "%K" "%N"`.

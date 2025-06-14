@@ -77,10 +77,14 @@ class MessageHandler:
                     self.state = MessageHandler.State.FINISHED
                     continue
 
-                # show results and ask for input
-                reply_markup = self.build_markup(self.results, index=True)
+                # show results message
                 torrent_results = [f'{i}\n{r.name}\n{r.stats}' for i, r in enumerate(self.results, start=1)]
                 torrent_results_message = '\n\n'.join(torrent_results)
+
+                # reply markup is index of torrent
+                reply_markup = self.build_keyboard_markup(options=range(1, len(self.results) + 1))
+
+                # send message
                 self.send_message(torrent_results_message, reply_markup=reply_markup, reply_to_message_id=message.id)
                 self.state = MessageHandler.State.TORRENT_SELECTION
             
@@ -99,7 +103,7 @@ class MessageHandler:
 
                 # prompt for download
                 name = self.results[index].name
-                reply_markup = self.build_markup(self.rss_feeds)
+                reply_markup = self.build_keyboard_markup(options=self.rss_feeds)
                 self.send_message(f'Downloading: <strong>"{name}"</strong>', reply_to_message_id=message.id)
                 self.send_message('RSS feed?', reply_markup=reply_markup)                
                 self.state = MessageHandler.State.RSS_FEED_SELECTION
@@ -153,13 +157,10 @@ class MessageHandler:
             results.append(torrent)
         return results
 
-    def build_markup(self, options, index=False):
+    def build_keyboard_markup(self, options):
         markup = telebot.types.ReplyKeyboardMarkup()
-        for i, val in enumerate(options):
-            # or add KeyboardButton one row at a time:
-            if index:
-                button = telebot.types.KeyboardButton(f'{i + 1}')
-            else:
-                button = telebot.types.KeyboardButton(val)
+        # add options as keyboard buttons
+        for option in options:
+            button = telebot.types.KeyboardButton(option)
             markup.add(button)
         return markup

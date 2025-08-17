@@ -11,6 +11,7 @@ from time import time
 import random
 import string
 from enum import Enum
+import urllib.parse
 
 Torrent = namedtuple('Torrent', ['name', 'magnet', 'stats'])
 
@@ -20,7 +21,8 @@ class MessageHandler:
         INITIAL = 1
         TORRENT_SELECTION = 2
         RSS_FEED_SELECTION = 3
-        FINISHED = 4
+        MAGNET_RSS_FEED_SELECTION = 4
+        FINISHED = 5
 
     def __init__(self, bot, chat_id, rss_api, rss_feeds, num_results):
         self.bot = bot
@@ -28,6 +30,7 @@ class MessageHandler:
         self.rss_api = rss_api
         self.rss_feeds = rss_feeds
         self.num_results = num_results
+        self.magnet_info = {"link": None, "name": None}
         
         self.queue = Queue()
         self.results = []
@@ -65,6 +68,18 @@ class MessageHandler:
                 if query == '':
                     self.send_message('No query specified.')
                     self.state = MessageHandler.State.FINISHED
+                    continue
+
+                if query.startswith('magnet:?'):
+                    self.magnet_info["link"] = query
+                    match = re.search(r'&dn=([^&]+)', query)
+                    self.magnet_info["name"] = urllib.parse.unquote_plus(match.group(1)) if match else "Unknown"
+                    self.send_message(
+                        f'You sent a magnet link for: <strong>"{self.magnet_info["name"]}"</strong>\n\nSelect RSS feed to add.',
+                        reply_to_message_id=message.id,
+                        reply_markup=self.build_keyboard_markup(options=self.rss_feeds)
+                    )
+                    self.state = MessageHandler.State.MAGNET_RSS_FEED_SELECTION
                     continue
 
                 # search for query
@@ -127,6 +142,19 @@ class MessageHandler:
                 # inform user and finish thread
                 self.send_message(f'Added to RSS feed: <strong>"{message.text}"</strong>', reply_to_message_id=message.id)
                 self.state = MessageHandler.State.FINISHED
+            elif self.state == MessageHandler.State.MAGNET_RSS_FEED_SELECTION:
+                if message.text not in self.rss_feeds:
+                    self.send_message('Invalid RSS feed!', reply_to_message_id=message.id)
+                    continue
+                # Add magnet to selected RSS feed
+                data = dict(name=self.magnet_info["name"], magnet=self.magnet_info["link"], guid=uuid4().hex)
+                requests.post(f'{self.rss_api}/{message.text}', data=json.dumps(data))
+                self.send_message(
+                    f'Added <strong>"{self.magnet_info["name"]}"</strong> to RSS feed: <strong>"{message.text}"</strong>',
+                    reply_to_message_id=message.id
+                )
+                self.state = MessageHandler.State.FINISHED
+                continue
 
     def search(self, query):
         # get snowfl homepage

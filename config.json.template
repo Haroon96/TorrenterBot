@@ -13,5 +13,9 @@
     },
     "ALLOWED_CHAT_IDS": [
     ],
-    "TELEGRAM_API_URL": ""
+    "TELEGRAM_API_URL": "",
+    "PLEX_TOKEN":"",
+    "PLEX_URL":"",
+    "MOVIE_PATH": "",
+    "SHOW_PATH": ""
 }

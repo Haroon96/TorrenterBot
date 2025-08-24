@@ -12,6 +12,7 @@ import random
 import string
 from enum import Enum
 import urllib.parse
+import plex_wrapper
 
 Torrent = namedtuple('Torrent', ['name', 'magnet', 'stats'])
 
@@ -23,6 +24,8 @@ class MessageHandler:
         RSS_FEED_SELECTION = 3
         MAGNET_RSS_FEED_SELECTION = 4
         FINISHED = 5
+        DELETE_TYPE_SELECTION = 6
+        DELETE_ITEM_SELECTION = 7  
 
     def __init__(self, bot, chat_id, rss_api, rss_feeds, num_results):
         self.bot = bot
@@ -62,6 +65,15 @@ class MessageHandler:
                 continue
                 
             if self.state == MessageHandler.State.INITIAL:
+                if message.text.startswith('/delete'):
+                    self.send_message(
+                        "Delete a Show or Movie?",
+                        reply_markup=self.build_keyboard_markup(options=["Show", "Movie"]),
+                        reply_to_message_id=message.id
+                    )
+                    self.state = MessageHandler.State.DELETE_TYPE_SELECTION
+                    continue
+
                 # extract query from message
                 query = message.text.replace('/torrent', '').strip()
 
@@ -155,6 +167,48 @@ class MessageHandler:
                 )
                 self.state = MessageHandler.State.FINISHED
                 continue
+            elif self.state == MessageHandler.State.DELETE_TYPE_SELECTION:
+                user_input = message.text.strip().lower()
+                if user_input not in ["show", "movie"]:
+                    self.send_message("Invalid selection. Please choose Show or Movie.", reply_to_message_id=message.id)
+                    continue
+                self.delete_type = "Show" if user_input == "show" else "Movie"
+                # Fetch list of shows or movies
+                if self.delete_type == "Show":
+                    items = plex_wrapper.GetAllShows()
+                else:
+                    items = plex_wrapper.GetAllMovies()
+                if not items:
+                    self.send_message(f"No {self.delete_type.lower()}s found.", reply_to_message_id=message.id)
+                    self.state = MessageHandler.State.FINISHED
+                    continue
+                self.delete_items = items
+                self.send_message(
+                    f"Select a {self.delete_type.lower()} to delete:",
+                    reply_markup=self.build_keyboard_markup(options=items),
+                    reply_to_message_id=message.id
+                )
+                self.state = MessageHandler.State.DELETE_ITEM_SELECTION
+                continue
+
+            elif self.state == MessageHandler.State.DELETE_ITEM_SELECTION:
+                try:
+                    if message.text not in self.delete_items:
+                        self.send_message("Invalid selection.", reply_to_message_id=message.id)
+                        continue
+                    # Call delete function
+                    if self.delete_type == "Show":
+                        plex_wrapper.DeleteShow(message.text)
+                    else:
+                        plex_wrapper.DeleteMovie(message.text)
+                    self.send_message(f"{self.delete_type} '{message.text}' deleted.", reply_to_message_id=message.id)
+                    self.state = MessageHandler.State.FINISHED
+                    continue
+                except Exception as e:
+                    self.send_message(f"Error deleting {self.delete_type.lower()}: {str(e)}", reply_to_message_id=message.id)
+                    self.state = MessageHandler.State.FINISHED
+                    continue
+
 
     def search(self, query):
         # get snowfl homepage

@@ -47,7 +47,7 @@ def DeleteShow(show_title):
                                     continue  # skip episodes with missing files
                         for folder_name in folders:
                             folder_path = os.path.join(config["SHOW_PATH"], folder_name)
-                            if config["SHOW_PATH"] in folder_path and len(folder_path.split(f'{config["SHOW_PATH"]}/')[1]) > 1:
+                            if config["SHOW_PATH"] in folder_path and len(folder_path.split(f'{config["SHOW_PATH"]}/')[1]) > 1 and os.path.exists(folder_path):
                                 shutil.rmtree(folder_path)
                     except Exception as e:
                         raise Exception(f"Error removing show folders: {e}")
@@ -63,7 +63,7 @@ def DeleteMovie(movie_title):
                     try:
                         folder_name = movie.media[0].parts[0].file.replace(config["MOVIE_PATH"], "")[1:].split("/")[0]
                         folder_path = os.path.join(config["MOVIE_PATH"], folder_name)
-                        if config["MOVIE_PATH"] in folder_path and len(folder_path.split(f'{config["MOVIE_PATH"]}/')[1]) > 1:
+                        if config["MOVIE_PATH"] in folder_path and len(folder_path.split(f'{config["MOVIE_PATH"]}/')[1]) > 1 and os.path.exists(folder_path):
                             shutil.rmtree(folder_path)
                     except Exception as e:
                         raise Exception(f"Error removing movie folders: {e}")

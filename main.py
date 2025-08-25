@@ -64,7 +64,7 @@ class TelegramBot:
                 self.handlers[from_user].start()
 
             if message.text.startswith('/rescan'):
-                plex_wrapper.RefreshLibrary()
+                plex_wrapper.refresh_library()
                 self.bot.send_message(chat_id, "Plex library rescan complete.", reply_to_message_id=message.id)
                 continue
 

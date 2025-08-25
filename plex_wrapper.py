@@ -9,7 +9,7 @@ def get_realpath(file):
 with open(get_realpath('config.json')) as f:
     config = json.load(f)
 
-def GetAllShows():
+def get_all_shows():
     plex = PlexServer(config["PLEX_URL"], config["PLEX_TOKEN"])
     shows = []
     for section in plex.library.sections():
@@ -19,7 +19,7 @@ def GetAllShows():
     return shows
 
 
-def GetAllMovies():
+def get_all_movies():
     plex = PlexServer(config["PLEX_URL"], config["PLEX_TOKEN"])
     movies = []
     for section in plex.library.sections():
@@ -28,7 +28,7 @@ def GetAllMovies():
                 movies.append(movie.title)
     return movies
 
-def DeleteShow(show_title):
+def delete_show(show_title):
     plex = PlexServer(config["PLEX_URL"], config["PLEX_TOKEN"])
     for section in plex.library.sections():
         if section.type == "show":
@@ -53,7 +53,7 @@ def DeleteShow(show_title):
                         raise Exception(f"Error removing show folders: {e}")
         
 
-def DeleteMovie(movie_title):
+def delete_movie(movie_title):
     plex = PlexServer(config["PLEX_URL"], config["PLEX_TOKEN"])
     for section in plex.library.sections():
         if section.type == "movie":
@@ -68,7 +68,7 @@ def DeleteMovie(movie_title):
                     except Exception as e:
                         raise Exception(f"Error removing movie folders: {e}")
 
-def RefreshLibrary():
+def refresh_library():
     plex = PlexServer(config["PLEX_URL"], config["PLEX_TOKEN"])
     for section in plex.library.sections():
         section.refresh()

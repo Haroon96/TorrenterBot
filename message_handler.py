@@ -175,9 +175,9 @@ class MessageHandler:
                 self.delete_type = "Show" if user_input == "show" else "Movie"
                 # Fetch list of shows or movies
                 if self.delete_type == "Show":
-                    items = plex_wrapper.GetAllShows()
+                    items = plex_wrapper.get_all_shows()
                 else:
-                    items = plex_wrapper.GetAllMovies()
+                    items = plex_wrapper.get_all_movies()
                 if not items:
                     self.send_message(f"No {self.delete_type.lower()}s found.", reply_to_message_id=message.id)
                     self.state = MessageHandler.State.FINISHED
@@ -198,9 +198,9 @@ class MessageHandler:
                         continue
                     # Call delete function
                     if self.delete_type == "Show":
-                        plex_wrapper.DeleteShow(message.text)
+                        plex_wrapper.delete_show(message.text)
                     else:
-                        plex_wrapper.DeleteMovie(message.text)
+                        plex_wrapper.delete_movie(message.text)
                     self.send_message(f"{self.delete_type} '{message.text}' deleted.", reply_to_message_id=message.id)
                     self.state = MessageHandler.State.FINISHED
                     continue

@@ -6,6 +6,7 @@ import requests
 from time import sleep
 import rss_server
 import typing
+import plex_wrapper
 
 class TelegramBot:
     def __init__(self, token, rss_feeds, rss_api, num_results, allowed_chat_ids, qbittorrent_credentials):    
@@ -57,6 +58,15 @@ class TelegramBot:
                     self.handlers[from_user].state = MessageHandler.State.FINISHED
                 self.handlers[from_user] = MessageHandler(self.bot, chat_id, self.rss_api, self.rss_feeds, self.num_results)
                 self.handlers[from_user].start()
+
+            if message.text.startswith('/delete'):
+                self.handlers[from_user] = MessageHandler(self.bot, chat_id, self.rss_api, self.rss_feeds, self.num_results)
+                self.handlers[from_user].start()
+
+            if message.text.startswith('/rescan'):
+                plex_wrapper.refresh_library()
+                self.bot.send_message(chat_id, "Plex library rescan complete.", reply_to_message_id=message.id)
+                continue
 
             # put message in handler queue
             if from_user in self.handlers and not self.handlers[from_user].is_finished():

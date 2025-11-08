@@ -1,7 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 import json
-import logging
 
 class S(BaseHTTPRequestHandler):
 
